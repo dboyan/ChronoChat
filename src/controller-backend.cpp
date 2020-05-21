@@ -12,6 +12,7 @@
 #include "controller-backend.hpp"
 
 #ifndef Q_MOC_RUN
+#include <iostream>
 #include <ndn-cxx/util/segment-fetcher.hpp>
 #include "invitation.hpp"
 #include "logging.h"

@@ -14,10 +14,12 @@
 #include <QFile>
 
 #ifndef Q_MOC_RUN
+#include <iostream>
 #include <boost/iostreams/stream.hpp>
 #include <ndn-cxx/util/io.hpp>
 #include <ndn-cxx/security/validator-regex.hpp>
 #include "logging.h"
+#include "cryptopp.hpp"
 #endif
 
 
