@@ -117,7 +117,7 @@ public:
   operator!=(const Profile& profile) const;
 
 private:
-  template<bool T>
+  template<ndn::encoding::Tag T>
   size_t
   wireEncode(ndn::EncodingImpl<T>& block) const;
 

@@ -77,7 +77,7 @@ Profile::Profile(const Profile& profile)
 {
 }
 
-template<bool T>
+template<ndn::encoding::Tag T>
 size_t
 Profile::wireEncode(ndn::EncodingImpl<T>& block) const
 {
