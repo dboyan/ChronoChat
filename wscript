@@ -37,6 +37,9 @@ def configure(conf):
     conf.check_cfg (package='ChronoSync', args=['ChronoSync >= 0.1', '--cflags', '--libs'],
                     uselib_store='SYNC', mandatory=True)
 
+    conf.check_cfg(package='libcrypto++', args=['--cflags', '--libs'],
+                   uselib_store='CRYPTOPP', mandatory=True)
+
     boost_libs = 'system random thread filesystem'
     if conf.options.with_tests:
         conf.env['WITH_TESTS'] = 1
@@ -65,7 +68,7 @@ def build (bld):
         defines = "WAF=1",
         source = bld.path.ant_glob(['src/*.cpp', 'src/*.ui', '*.qrc', 'logging.cc', 'src/*.proto']),
         includes = "src .",
-        use = "QTCORE QTGUI QTWIDGETS QTSQL NDN_CXX BOOST LOG4CXX SYNC",
+        use = "QTCORE QTGUI QTWIDGETS QTSQL NDN_CXX BOOST LOG4CXX SYNC CRYPTOPP",
         )
 
     # Unit tests
