@@ -54,7 +54,7 @@ public:
     contactList.insert(contactList.end(), m_contactList.begin(), m_contactList.end());
   }
 private:
-  shared_ptr<ndn::IdentityCertificate>
+  shared_ptr<ndn::security::v2::Certificate>
   loadTrustAnchor();
 
   void
@@ -195,7 +195,7 @@ signals:
   nameListReady(const QStringList& certNameList);
 
   void
-  idCertReady(const ndn::IdentityCertificate& idCert);
+  idCertReady(const ndn::security::v2::Certificate& idCert);
 
   void
   contactAliasListReady(const QStringList& aliasList);
@@ -263,7 +263,7 @@ private:
   };
 
   typedef std::map<Name, FetchedInfo> BufferedContacts;
-  typedef std::map<Name, shared_ptr<ndn::IdentityCertificate> > BufferedIdCerts;
+  typedef std::map<Name, shared_ptr<ndn::security::v2::Certificate> > BufferedIdCerts;
 
   typedef boost::recursive_mutex RecLock;
   typedef boost::unique_lock<RecLock> UniqueRecLock;

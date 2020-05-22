@@ -20,11 +20,10 @@ namespace chronochat {
 using std::vector;
 using std::string;
 
-using ndn::PublicKey;
-using ndn::IdentityCertificate;
 using ndn::CertificateSubjectDescription;
 using ndn::CertificateExtension;
 using ndn::OID;
+using ndn::security::v2::Certificate;
 using ndn::OBufferStream;
 
 const OID EndorseCertificate::PROFILE_EXT_OID("1.3.6.1.5.32.2.1");
@@ -51,14 +50,14 @@ operator>>(EndorseExtension& endorseExtension, vector<string>& endorseList)
   return endorseExtension;
 }
 
-EndorseCertificate::EndorseCertificate(const IdentityCertificate& kskCertificate,
+EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
                                        const Profile& profile,
                                        const vector<string>& endorseList)
   : Certificate()
   , m_profile(profile)
   , m_endorseList(endorseList)
 {
-  m_keyName = IdentityCertificate::certificateNameToPublicKeyName(kskCertificate.getName());
+  m_keyName = kskCertificate.getKeyName();
   m_signer = m_keyName;
 
   Name dataName = m_keyName;
@@ -112,10 +111,11 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
                                                                        endorseWire.size())));
 
   encode();
+  */
 }
 
 EndorseCertificate::EndorseCertificate(const Name& keyName,
-                                       const PublicKey& key,
+                                       const ndn::Buffer& key,
                                        const time::system_clock::TimePoint& notBefore,
                                        const time::system_clock::TimePoint& notAfter,
                                        const Name& signer,

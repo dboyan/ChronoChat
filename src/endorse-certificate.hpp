@@ -16,14 +16,14 @@
 
 namespace chronochat {
 
-class EndorseCertificate : public ndn::Certificate
+class EndorseCertificate : public ndn::security::v2::Certificate
 {
 public:
-  class Error : public ndn::Certificate::Error
+  class Error : public tlv::Error
   {
   public:
     Error(const std::string& what)
-      : ndn::Certificate::Error(what)
+      : tlv::Error(what)
     {
     }
   };
@@ -32,7 +32,7 @@ public:
 
   EndorseCertificate() {}
 
-  EndorseCertificate(const ndn::IdentityCertificate& kskCertificate,
+  EndorseCertificate(const ndn::security::v2::Certificate& kskCertificate,
                      const Profile& profile,
                      const std::vector<std::string>& endorseList = DEFAULT_ENDORSE_LIST);
 
@@ -41,7 +41,7 @@ public:
                      const std::vector<std::string>& endorseList = DEFAULT_ENDORSE_LIST);
 
   EndorseCertificate(const Name& keyName,
-                     const ndn::PublicKey& key,
+                     const ndn::Buffer& key,
                      const time::system_clock::TimePoint& notBefore,
                      const time::system_clock::TimePoint& notAfter,
                      const Name& signer,

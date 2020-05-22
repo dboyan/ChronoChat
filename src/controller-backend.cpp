@@ -26,9 +26,9 @@ namespace chronochat {
 using std::string;
 
 using ndn::Face;
-using ndn::IdentityCertificate;
 using ndn::OnInterestValidated;
 using ndn::OnInterestValidationFailed;
+using ndn::security::v2::Certificate;
 
 
 static const ndn::Name::Component ROUTING_HINT_SEPARATOR =
@@ -253,7 +253,7 @@ ControllerBackend::onInvitationValidated(const shared_ptr<const Interest>& inter
 {
   Invitation invitation(interest->getName());
   // Should be obtained via a method of ContactManager.
-  string alias = invitation.getInviterCertificate().getPublicKeyName().getPrefix(-1).toUri();
+  string alias = invitation.getInviterCertificate().getKeyName().getPrefix(-1).toUri();
 
   emit invitationValidated(QString::fromStdString(alias),
                            QString::fromStdString(invitation.getChatroom()),
@@ -412,7 +412,7 @@ void
 ControllerBackend::onInvitationResponded(const ndn::Name& invitationName, bool accepted)
 {
   shared_ptr<Data> response = make_shared<Data>();
-  shared_ptr<IdentityCertificate> chatroomCert;
+  shared_ptr<Certificate> chatroomCert;
 
   // generate reply;
   if (accepted) {

@@ -25,6 +25,8 @@
 
 INIT_LOGGER("ChatDialogBackend");
 
+using ndn::security::v2::Certificate;
+
 namespace chronochat {
 
 static const time::milliseconds FRESHNESS_PERIOD(60000);
@@ -119,7 +121,7 @@ ChatDialogBackend::initializeSync()
   m_scheduler = unique_ptr<ndn::Scheduler>(new ndn::Scheduler(m_face->getIoService()));
 
   // initialize validator
-  shared_ptr<ndn::IdentityCertificate> anchor = loadTrustAnchor();
+  shared_ptr<Certificate> anchor = loadTrustAnchor();
 
   if (static_cast<bool>(anchor)) {
     shared_ptr<ndn::ValidatorRegex> validator =
@@ -180,7 +182,7 @@ private:
   QIODevice& m_source;
 };
 
-shared_ptr<ndn::IdentityCertificate>
+shared_ptr<Certificate>
 ChatDialogBackend::loadTrustAnchor()
 {
   QFile anchorFile(":/security/anchor.cert");
@@ -190,7 +192,7 @@ ChatDialogBackend::loadTrustAnchor()
   }
 
   boost::iostreams::stream<IoDeviceSource> anchorFileStream(anchorFile);
-  return ndn::io::load<ndn::IdentityCertificate>(anchorFileStream);
+  return ndn::io::load<Certificate>(anchorFileStream);
 }
 
 void

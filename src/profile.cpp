@@ -9,6 +9,8 @@
  *         Qiuhan Ding <qiuhanding@cs.ucla.edu>
  */
 
+#include "ndn-cxx/security/v2/additional-description.hpp"
+
 #include "profile.hpp"
 #include "logging.h"
 
@@ -18,8 +20,8 @@ using std::vector;
 using std::string;
 using std::map;
 
-using ndn::IdentityCertificate;
-using ndn::CertificateSubjectDescription;
+using ndn::security::v2::Certificate;
+using ndn::security::v2::AdditionalDescription;
 
 const std::string Profile::OID_NAME("2.5.4.41");
 const std::string Profile::OID_ORG("2.5.4.11");
@@ -28,33 +30,34 @@ const std::string Profile::OID_HOMEPAGE("2.5.4.3");
 const std::string Profile::OID_ADVISOR("2.5.4.80");
 const std::string Profile::OID_EMAIL("1.2.840.113549.1.9.1");
 
-Profile::Profile(const IdentityCertificate& identityCertificate)
+Profile::Profile(const Certificate& certificate)
 {
-  Name keyName = IdentityCertificate::certificateNameToPublicKeyName(identityCertificate.getName());
+  Name keyName = certificate.getKeyName();
 
-  m_entries[string("IDENTITY")] = keyName.getPrefix(-1).toUri();
+  m_entries["IDENTITY"] = keyName.getPrefix(-1).toUri();
 
-  const vector<CertificateSubjectDescription>& subList =
-    identityCertificate.getSubjectDescriptionList();
-
-  for (vector<CertificateSubjectDescription>::const_iterator it = subList.begin();
-       it != subList.end(); it++) {
-    const string oidStr = it->getOidString();
-    string valueStr = it->getValue();
-    if (oidStr == OID_NAME)
-      m_entries["name"] = valueStr;
-    else if (oidStr == OID_ORG)
-      m_entries["institution"] = valueStr;
-    else if (oidStr == OID_GROUP)
-      m_entries["group"] = valueStr;
-    else if (oidStr == OID_HOMEPAGE)
-      m_entries["homepage"] = valueStr;
-    else if (oidStr == OID_ADVISOR)
-      m_entries["advisor"] = valueStr;
-    else if (oidStr == OID_EMAIL)
-      m_entries["email"] = valueStr;
-    else
-      m_entries[oidStr] = valueStr;
+  try {
+    const ndn::Block& info = certificate.getSignature().getSignatureInfo().getTypeSpecificTlv(tlv::AdditionalDescription);
+    for (const auto& desc : AdditionalDescription(info)) {
+      const string oidStr = desc.first;
+      string valueStr = desc.second;
+      if (oidStr == OID_NAME)
+        m_entries["name"] = valueStr;
+      else if (oidStr == OID_ORG)
+        m_entries["institution"] = valueStr;
+      else if (oidStr == OID_GROUP)
+        m_entries["group"] = valueStr;
+      else if (oidStr == OID_HOMEPAGE)
+        m_entries["homepage"] = valueStr;
+      else if (oidStr == OID_ADVISOR)
+        m_entries["advisor"] = valueStr;
+      else if (oidStr == OID_EMAIL)
+        m_entries["email"] = valueStr;
+      else
+        m_entries[oidStr] = valueStr;
+    }
+  } catch (const ndn::SignatureInfo::Error&) {
+    // Ignore
   }
 }
 

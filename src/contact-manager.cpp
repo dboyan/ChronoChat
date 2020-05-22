@@ -41,7 +41,6 @@ using std::vector;
 
 using ndn::Face;
 using ndn::OBufferStream;
-using ndn::IdentityCertificate;
 using ndn::Validator;
 using ndn::ValidatorRegex;
 using ndn::SecRuleRelative;
@@ -49,6 +48,7 @@ using ndn::OnDataValidated;
 using ndn::OnDataValidationFailed;
 using ndn::OnInterestValidated;
 using ndn::OnInterestValidationFailed;
+using ndn::security::v2::Certificate;
 
 
 ContactManager::ContactManager(Face& face,
@@ -65,10 +65,10 @@ ContactManager::~ContactManager()
 }
 
 // private methods
-shared_ptr<IdentityCertificate>
+shared_ptr<Certificate>
 ContactManager::loadTrustAnchor()
 {
-  shared_ptr<IdentityCertificate> anchor;
+  shared_ptr<Certificate> anchor;
 
   QFile anchorFile(":/security/anchor.cert");
 
@@ -87,13 +87,13 @@ ContactManager::loadTrustAnchor()
     OBufferStream os;
     StringSource(reinterpret_cast<const uint8_t*>(buf), fileSize, true,
                  new Base64Decoder(new FileSink(os)));
-    anchor = make_shared<IdentityCertificate>();
+    anchor = make_shared<Certificate>();
     anchor->wireDecode(Block(os.buf()));
   }
   catch (CryptoPP::Exception& e) {
     emit warning(QString("Cannot load trust anchor!"));
   }
-  catch (IdentityCertificate::Error& e) {
+  catch (Certificate::Error& e) {
     emit warning(QString("Cannot load trust anchor!"));
   }
   catch(Block::Error& e) {
@@ -108,7 +108,7 @@ ContactManager::loadTrustAnchor()
 void
 ContactManager::initializeSecurity()
 {
-  shared_ptr<IdentityCertificate> anchor = loadTrustAnchor();
+  shared_ptr<Certificate> anchor = loadTrustAnchor();
 
   shared_ptr<ValidatorRegex> validator = make_shared<ValidatorRegex>(boost::ref(m_face));
   validator->addDataVerificationRule(make_shared<SecRuleRelative>("^([^<DNS>]*)<DNS><ENDORSED>",
@@ -423,7 +423,7 @@ ContactManager::publishCollectEndorsedDataInDNS()
 void
 ContactManager::onIdentityCertValidated(const shared_ptr<const Data>& data)
 {
-  shared_ptr<IdentityCertificate> cert = make_shared<IdentityCertificate>(boost::cref(*data));
+  shared_ptr<Certificate> cert = make_shared<Certificate>(boost::cref(data));
   m_bufferedIdCerts[cert->getName()] = cert;
   decreaseIdCertCount();
 }
@@ -474,7 +474,7 @@ ContactManager::getSignedSelfEndorseCertificate(const Profile& profile)
 {
   Name certificateName = m_keyChain.getDefaultCertificateNameForIdentity(m_identity);
 
-  shared_ptr<IdentityCertificate> signingCert = m_keyChain.getCertificate(certificateName);
+  shared_ptr<Certificate> signingCert = m_keyChain.getCertificate(certificateName);
 
   vector<string> endorseList;
   for (Profile::const_iterator it = profile.begin(); it != profile.end(); it++)
@@ -823,7 +823,7 @@ void
 ContactManager::onAddFetchedContactIdCert(const QString& qCertName)
 {
   Name certName(qCertName.toStdString());
-  Name identity = IdentityCertificate::certificateNameToPublicKeyName(certName).getPrefix(-1);
+  Name identity = ndn::security::v2::extractIdentityFromCertName(certName);
 
   BufferedIdCerts::const_iterator it = m_bufferedIdCerts.find(certName);
   if (it != m_bufferedIdCerts.end()) {
