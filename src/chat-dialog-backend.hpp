@@ -35,7 +35,7 @@ public:
   ndn::Name sessionPrefix;
   bool hasNick;
   std::string userNick;
-  ndn::EventId timeoutEventId;
+  ndn::scheduler::EventId timeoutEventId;
 };
 
 class ChatDialogBackend : public QThread
@@ -169,11 +169,11 @@ private:
   std::string m_nick;                    // user nick
 
   Name m_signingId;                      // signing identity
-  shared_ptr<ndn::Validator> m_validator;// validator
+  shared_ptr<ndn::security::v2::Validator> m_validator;// validator
   shared_ptr<chronosync::Socket> m_sock; // SyncSocket
 
   unique_ptr<ndn::Scheduler> m_scheduler;// scheduler
-  ndn::EventId m_helloEventId;           // event id of timeout
+  ndn::scheduler::EventId m_helloEventId;           // event id of timeout
 
   bool m_joined;                         // true if in a chatroom
 

@@ -151,12 +151,12 @@ ChatDialogBackend::initializeSync()
                                            m_validator);
 
   // schedule a new join event
-  m_scheduler->scheduleEvent(time::milliseconds(600),
-                             bind(&ChatDialogBackend::sendJoin, this));
+  m_scheduler->schedule(time::milliseconds(600),
+                        bind(&ChatDialogBackend::sendJoin, this));
 
   // cancel existing hello event if it exists
-  if (m_helloEventId != nullptr) {
-    m_scheduler->cancelEvent(m_helloEventId);
+  if (m_helloEventId) {
+    m_helloEventId.cancel();
     m_helloEventId.reset();
   }
 }
@@ -294,7 +294,7 @@ ChatDialogBackend::processChatData(const ndn::Data& data,
     if (it != m_roster.end()) {
       // cancel timeout event
       if (static_cast<bool>(it->second.timeoutEventId))
-        m_scheduler->cancelEvent(it->second.timeoutEventId);
+        it->second.timeoutEventId.cancel();
 
       // notify frontend to remove the remote session (node)
       emit sessionRemoved(QString::fromStdString(remoteSessionPrefix.toUri()),
@@ -320,13 +320,13 @@ ChatDialogBackend::processChatData(const ndn::Data& data,
 
     // If a timeout event has been scheduled, cancel it.
     if (static_cast<bool>(it->second.timeoutEventId))
-      m_scheduler->cancelEvent(it->second.timeoutEventId);
+      it->second.timeoutEventId.cancel();
 
     // (Re)schedule another timeout event after 3 HELLO_INTERVAL;
     it->second.timeoutEventId =
-      m_scheduler->scheduleEvent(HELLO_INTERVAL * 3,
-                                 bind(&ChatDialogBackend::remoteSessionTimeout,
-                                      this, remoteSessionPrefix));
+      m_scheduler->schedule(HELLO_INTERVAL * 3,
+                            bind(&ChatDialogBackend::remoteSessionTimeout,
+                                 this, remoteSessionPrefix));
 
     // If chat message, notify the frontend
     if (msg.getMsgType() == ChatMessage::CHAT) {
@@ -418,8 +418,8 @@ ChatDialogBackend::sendJoin()
   prepareControlMessage(msg, ChatMessage::JOIN);
   sendMsg(msg);
 
-  m_helloEventId = m_scheduler->scheduleEvent(HELLO_INTERVAL,
-                                              bind(&ChatDialogBackend::sendHello, this));
+  m_helloEventId = m_scheduler->schedule(HELLO_INTERVAL,
+                                         bind(&ChatDialogBackend::sendHello, this));
   emit newChatroomForDiscovery(Name::Component(m_chatroomName));
 }
 
@@ -430,8 +430,8 @@ ChatDialogBackend::sendHello()
   prepareControlMessage(msg, ChatMessage::HELLO);
   sendMsg(msg);
 
-  m_helloEventId = m_scheduler->scheduleEvent(HELLO_INTERVAL,
-                                              bind(&ChatDialogBackend::sendHello, this));
+  m_helloEventId = m_scheduler->schedule(HELLO_INTERVAL,
+                                         bind(&ChatDialogBackend::sendHello, this));
 }
 
 void
