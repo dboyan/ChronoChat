@@ -14,6 +14,7 @@
 #ifndef Q_MOC_RUN
 #include <iostream>
 #include <ndn-cxx/util/segment-fetcher.hpp>
+#include <ndn-cxx/security/signing-helpers.hpp>
 #include "invitation.hpp"
 #include "logging.h"
 #endif
@@ -412,7 +413,6 @@ void
 ControllerBackend::onInvitationResponded(const ndn::Name& invitationName, bool accepted)
 {
   shared_ptr<Data> response = make_shared<Data>();
-  shared_ptr<Certificate> chatroomCert;
 
   // generate reply;
   if (accepted) {
@@ -423,10 +423,12 @@ ControllerBackend::onInvitationResponded(const ndn::Name& invitationName, bool a
 
     // We should create a particular certificate for this chatroom,
     //but let's use default one for now.
-    chatroomCert
-      = m_keyChain.getCertificate(m_keyChain.getDefaultCertificateNameForIdentity(m_identity));
+    Certificate chatroomCert = m_keyChain.getPib()
+                                         .getIdentity(m_identity)
+                                         .getDefaultKey()
+                                         .getDefaultCertificate();
 
-    response->setContent(chatroomCert->wireEncode());
+    response->setContent(chatroomCert.wireEncode());
     response->setFreshnessPeriod(time::milliseconds(1000));
   }
   else {
@@ -434,7 +436,7 @@ ControllerBackend::onInvitationResponded(const ndn::Name& invitationName, bool a
     response->setFreshnessPeriod(time::milliseconds(1000));
   }
 
-  m_keyChain.signByIdentity(*response, m_identity);
+  m_keyChain.sign(*response, ndn::security::signingByIdentity(m_identity));
 
   // Check if we need a wrapper
   Name invitationRoutingPrefix = getInvitationRoutingPrefix();
@@ -452,7 +454,7 @@ ControllerBackend::onInvitationResponded(const ndn::Name& invitationName, bool a
     wrappedData->setContent(response->wireEncode());
     wrappedData->setFreshnessPeriod(time::milliseconds(1000));
 
-    m_keyChain.signByIdentity(*wrappedData, m_identity);
+    m_keyChain.sign(*wrappedData, ndn::security::signingByIdentity(m_identity));
     m_face.put(*wrappedData);
   }
 
@@ -470,7 +472,7 @@ ControllerBackend::onInvitationRequestResponded(const ndn::Name& invitationRespo
   else
     response->setContent(ndn::makeNonNegativeIntegerBlock(tlv::Content, 0));
 
-  m_keyChain.signByIdentity(*response, m_identity);
+  m_keyChain.sign(*response, ndn::security::signingByIdentity(m_identity));
   m_ims.insert(*response);
   m_face.put(*response);
 }

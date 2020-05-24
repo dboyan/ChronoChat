@@ -325,7 +325,7 @@ Controller::loadConf()
   catch (tlv::Error) {
     try {
       ndn::KeyChain keyChain;
-      m_identity = keyChain.getDefaultIdentity();
+      m_identity = keyChain.getPib().getDefaultIdentity().getName();
     }
     catch (ndn::KeyChain::Error) {
       m_identity.clear();
