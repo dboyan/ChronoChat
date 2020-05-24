@@ -249,20 +249,20 @@ ControllerBackend::onInvitationRequestInterest(const ndn::Name& prefix,
 }
 
 void
-ControllerBackend::onInvitationValidated(const shared_ptr<const Interest>& interest)
+ControllerBackend::onInvitationValidated(const Interest& interest)
 {
-  Invitation invitation(interest->getName());
+  Invitation invitation(interest.getName());
   // Should be obtained via a method of ContactManager.
   string alias = invitation.getInviterCertificate().getKeyName().getPrefix(-1).toUri();
 
   emit invitationValidated(QString::fromStdString(alias),
                            QString::fromStdString(invitation.getChatroom()),
-                           interest->getName());
+                           interest.getName());
 }
 
 void
-ControllerBackend::onInvitationValidationFailed(const shared_ptr<const Interest>& interest,
-                                                string failureInfo)
+ControllerBackend::onInvitationValidationFailed(const Interest& interest,
+                                                const ndn::security::v2::ValidationError& error)
 {
   // _LOG_DEBUG("Invitation: " << interest->getName() <<
   //            " cannot not be validated due to: " << failureInfo);
@@ -318,7 +318,7 @@ ControllerBackend::updateLocalPrefix(const Name& localPrefix)
 }
 
 void
-ControllerBackend::onRequestResponse(const Interest& interest, Data& data)
+ControllerBackend::onRequestResponse(const Interest& interest, const Data& data)
 {
   size_t i;
   Name interestName = interest.getName();

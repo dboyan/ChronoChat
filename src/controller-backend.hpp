@@ -74,11 +74,11 @@ private:
   onInvitationRegisterFailed(const Name& prefix, const std::string& failInfo);
 
   void
-  onInvitationValidated(const shared_ptr<const Interest>& interest);
+  onInvitationValidated(const Interest& interest);
 
   void
-  onInvitationValidationFailed(const shared_ptr<const Interest>& interest,
-                               std::string failureInfo);
+  onInvitationValidationFailed(const Interest& interest,
+                               const ndn::security::v2::ValidationError& error);
 
   void
   onLocalPrefix(const ndn::ConstBufferPtr& data);
@@ -90,7 +90,7 @@ private:
   updateLocalPrefix(const Name& localPrefix);
 
   void
-  onRequestResponse(const Interest& interest, Data& data);
+  onRequestResponse(const Interest& interest, const Data& data);
 
   void
   onRequestTimeout(const Interest& interest, int& resendTimes);

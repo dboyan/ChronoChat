@@ -142,10 +142,10 @@ ChatroomDiscoveryBackend::processSyncUpdate(const std::vector<chronosync::Missin
 }
 
 void
-ChatroomDiscoveryBackend::processChatroomData(const ndn::shared_ptr<const ndn::Data>& data)
+ChatroomDiscoveryBackend::processChatroomData(const ndn::Data& data)
 {
   // extract chatroom name by get(-3)
-  Name::Component chatroomName = data->getName().get(-3);
+  Name::Component chatroomName = data.getName().get(-3);
   auto it = m_chatroomList.find(chatroomName);
   if (it == m_chatroomList.end()) {
     m_chatroomList[chatroomName].chatroomName = chatroomName.toUri();
@@ -163,7 +163,7 @@ ChatroomDiscoveryBackend::processChatroomData(const ndn::shared_ptr<const ndn::D
     }
     else {
       it->second.count = 0;
-      if (m_routableUserDiscoveryPrefix < data->getName()) {
+      if (m_routableUserDiscoveryPrefix < data.getName()) {
         // when two managers exist, the one with "smaller" name take the control
         sendUpdate(chatroomName);
         return;
@@ -196,9 +196,9 @@ ChatroomDiscoveryBackend::processChatroomData(const ndn::shared_ptr<const ndn::D
                                       this, chatroomName));
   }
   else {
-    if (!data->getContent().empty()) {
+    if (!data.getContent().empty()) {
       ChatroomInfo chatroom;
-      chatroom.wireDecode(data->getContent().blockFromValue());
+      chatroom.wireDecode(data.getContent().blockFromValue());
       it->second.info = chatroom;
     }
 

@@ -236,10 +236,10 @@ ChatDialogBackend::processSyncUpdate(const std::vector<chronosync::MissingDataIn
     if (updates[i].high - updates[i].low < 3) {
       for (chronosync::SeqNo seq = updates[i].low; seq <= updates[i].high; ++seq) {
         m_sock->fetchData(updates[i].session, seq,
-                          [this] (const shared_ptr<const ndn::Data>& data) {
+                          [this] (const ndn::Data& data) {
                             this->processChatData(data, true, true);
                           },
-                          [this] (const shared_ptr<const ndn::Data>& data, const std::string& msg) {
+                          [this] (const ndn::Data& data, const ndn::security::v2::ValidationError& error) {
                             this->processChatData(data, true, false);
                           },
                           ndn::OnTimeout(),
@@ -250,10 +250,10 @@ ChatDialogBackend::processSyncUpdate(const std::vector<chronosync::MissingDataIn
     else {
       // There are too many msgs to fetch, let's just fetch the latest one
       m_sock->fetchData(updates[i].session, updates[i].high,
-                        [this] (const shared_ptr<const ndn::Data>& data) {
+                        [this] (const ndn::Data& data) {
                           this->processChatData(data, false, true);
                         },
-                        [this] (const shared_ptr<const ndn::Data>& data, const std::string& msg) {
+                        [this] (const ndn::Data& data, const ndn::security::v2::ValidationError& error) {
                           this->processChatData(data, false, false);
                         },
                         ndn::OnTimeout(),
@@ -268,25 +268,25 @@ ChatDialogBackend::processSyncUpdate(const std::vector<chronosync::MissingDataIn
 }
 
 void
-ChatDialogBackend::processChatData(const ndn::shared_ptr<const ndn::Data>& data,
+ChatDialogBackend::processChatData(const ndn::Data& data,
                                    bool needDisplay,
                                    bool isValidated)
 {
   ChatMessage msg;
 
   try {
-    msg.wireDecode(data->getContent().blockFromValue());
+    msg.wireDecode(data.getContent().blockFromValue());
   }
   catch (tlv::Error) {
     _LOG_DEBUG("Errrrr.. Can not parse msg with name: " <<
-               data->getName() << ". what is happening?");
+               data.getName() << ". what is happening?");
     // nasty stuff: as a remedy, we'll form some standard msg for inparsable msgs
     msg.setNick("inconnu");
     msg.setMsgType(ChatMessage::OTHER);
     return;
   }
 
-  Name remoteSessionPrefix = data->getName().getPrefix(-1);
+  Name remoteSessionPrefix = data.getName().getPrefix(-1);
 
   if (msg.getMsgType() == ChatMessage::LEAVE) {
     BackendRoster::iterator it = m_roster.find(remoteSessionPrefix);
@@ -316,7 +316,7 @@ ChatDialogBackend::processChatData(const ndn::shared_ptr<const ndn::Data>& data,
       BOOST_ASSERT(false);
     }
 
-    uint64_t seqNo = data->getName().get(-1).toNumber();
+    uint64_t seqNo = data.getName().get(-1).toNumber();
 
     // If a timeout event has been scheduled, cancel it.
     if (static_cast<bool>(it->second.timeoutEventId))

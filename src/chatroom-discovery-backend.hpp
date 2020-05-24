@@ -75,7 +75,7 @@ private:
   processSyncUpdate(const std::vector<chronosync::MissingDataInfo>& updates);
 
   void
-  processChatroomData(const ndn::shared_ptr<const ndn::Data>& data);
+  processChatroomData(const ndn::Data& data);
 
   void
   localSessionTimeout(const Name::Component& chatroomName);

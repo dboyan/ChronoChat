@@ -232,12 +232,12 @@ ContactManager::prepareEndorseInfo(const Name& identity)
 }
 
 void
-ContactManager::onDnsSelfEndorseCertValidated(const shared_ptr<const Data>& data,
+ContactManager::onDnsSelfEndorseCertValidated(const Data& data,
                                               const Name& identity)
 {
   try {
     Data plainData;
-    plainData.wireDecode(data->getContent().blockFromValue());
+    plainData.wireDecode(data.getContent().blockFromValue());
     shared_ptr<EndorseCertificate> selfEndorseCertificate =
       make_shared<EndorseCertificate>(boost::cref(plainData));
     if (Validator::verifySignature(plainData, selfEndorseCertificate->getPublicKeyInfo())) {
@@ -259,8 +259,8 @@ ContactManager::onDnsSelfEndorseCertValidated(const shared_ptr<const Data>& data
 }
 
 void
-ContactManager::onDnsSelfEndorseCertValidationFailed(const shared_ptr<const Data>& data,
-                                                     const string& failInfo,
+ContactManager::onDnsSelfEndorseCertValidationFailed(const Data& data,
+                                                     const ValidationError& error,
                                                      const Name& identity)
 {
   // If we cannot validate the Self-Endorse-Certificate, we may retry or fetch id-cert,
@@ -278,12 +278,12 @@ ContactManager::onDnsSelfEndorseCertTimeoutNotify(const Interest& interest,
 }
 
 void
-ContactManager::onDnsCollectEndorseValidated(const shared_ptr<const Data>& data,
+ContactManager::onDnsCollectEndorseValidated(const Data& data,
                                              const Name& identity)
 {
   try {
     shared_ptr<EndorseCollection> endorseCollection =
-      make_shared<EndorseCollection>(data->getContent());
+      make_shared<EndorseCollection>(data.getContent());
     m_bufferedContacts[identity].m_endorseCollection = endorseCollection;
     fetchEndorseCertificateInternal(identity, 0);
   }
@@ -293,8 +293,8 @@ ContactManager::onDnsCollectEndorseValidated(const shared_ptr<const Data>& data,
 }
 
 void
-ContactManager::onDnsCollectEndorseValidationFailed(const shared_ptr<const Data>& data,
-                                                    const string& failInfo,
+ContactManager::onDnsCollectEndorseValidationFailed(const Data& data,
+                                                    const ValidationError& error,
                                                     const Name& identity)
 {
   prepareEndorseInfo(identity);
@@ -308,7 +308,7 @@ ContactManager::onDnsCollectEndorseTimeoutNotify(const Interest& interest, const
 }
 
 void
-ContactManager::onEndorseCertificateInternal(const Interest& interest, Data& data,
+ContactManager::onEndorseCertificateInternal(const Interest& interest, const Data& data,
                                              const Name& identity, size_t certIndex,
                                              string hash)
 {
@@ -363,10 +363,10 @@ ContactManager::collectEndorsement()
 }
 
 void
-ContactManager::onDnsEndorseeValidated(const shared_ptr<const Data>& data)
+ContactManager::onDnsEndorseeValidated(const Data& data)
 {
   Data endorseData;
-  endorseData.wireDecode(data->getContent().blockFromValue());
+  endorseData.wireDecode(data.getContent().blockFromValue());
 
   EndorseCertificate endorseCertificate(endorseData);
   m_contactStorage->updateCollectEndorse(endorseCertificate);
@@ -375,8 +375,8 @@ ContactManager::onDnsEndorseeValidated(const shared_ptr<const Data>& data)
 }
 
 void
-ContactManager::onDnsEndorseeValidationFailed(const shared_ptr<const Data>& data,
-                                              const string& failInfo)
+ContactManager::onDnsEndorseeValidationFailed(const Data& data,
+                                              const ValidationError& error)
 {
   decreaseCollectStatus();
 }
@@ -421,7 +421,7 @@ ContactManager::publishCollectEndorsedDataInDNS()
 }
 
 void
-ContactManager::onIdentityCertValidated(const shared_ptr<const Data>& data)
+ContactManager::onIdentityCertValidated(const Data& data)
 {
   shared_ptr<Certificate> cert = make_shared<Certificate>(boost::cref(data));
   m_bufferedIdCerts[cert->getName()] = cert;
@@ -429,8 +429,8 @@ ContactManager::onIdentityCertValidated(const shared_ptr<const Data>& data)
 }
 
 void
-ContactManager::onIdentityCertValidationFailed(const shared_ptr<const Data>& data,
-                                               const string& failInfo)
+ContactManager::onIdentityCertValidationFailed(const Data& data,
+                                               const ValidationError& error)
 {
   // _LOG_DEBUG("ContactManager::onIdentityCertValidationFailed " << data->getName());
   decreaseIdCertCount();

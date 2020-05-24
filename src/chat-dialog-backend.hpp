@@ -74,7 +74,7 @@ private:
   processSyncUpdate(const std::vector<chronosync::MissingDataInfo>& updates);
 
   void
-  processChatData(const ndn::shared_ptr<const ndn::Data>& data,
+  processChatData(const ndn::Data& data,
                   bool needDisplay,
                   bool isValidated);
 
