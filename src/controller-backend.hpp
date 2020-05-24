@@ -22,7 +22,7 @@
 #include "invitation.hpp"
 #include "validator-invitation.hpp"
 #include <ndn-cxx/security/key-chain.hpp>
-#include <ndn-cxx/util/in-memory-storage-persistent.hpp>
+#include <ndn-cxx/ims/in-memory-storage-persistent.hpp>
 #include <ndn-cxx/security/validator-null.hpp>
 #include <boost/thread.hpp>
 #include <mutex>
@@ -180,7 +180,7 @@ private:
   std::mutex m_resumeMutex;
   std::mutex m_nfdConnectionMutex;
 
-  ndn::util::InMemoryStoragePersistent m_ims;
+  ndn::InMemoryStoragePersistent m_ims;
 };
 
 } // namespace chronochat
