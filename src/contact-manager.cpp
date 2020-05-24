@@ -54,7 +54,7 @@ ContactManager::ContactManager(Face& face,
                                QObject* parent)
   : QObject(parent)
   , m_face(face)
-  , m_dnsListenerId(0)
+  , m_dnsListenerId()
 {
   initializeSecurity();
 }
@@ -639,15 +639,14 @@ ContactManager::onIdentityUpdated(const QString& identity)
 
   Name dnsPrefix;
   dnsPrefix.append(m_identity).append("DNS");
-  const ndn::RegisteredPrefixId* dnsListenerId =
+  ndn::RegisteredPrefixHandle dnsListenerId =
     m_face.setInterestFilter(dnsPrefix,
                              bind(&ContactManager::onDnsInterest,
                                   this, _1, _2),
                              bind(&ContactManager::onDnsRegisterFailed,
                                   this, _1, _2));
 
-  if (m_dnsListenerId != 0)
-    m_face.unsetInterestFilter(m_dnsListenerId);
+  m_dnsListenerId.cancel();
 
   m_dnsListenerId = dnsListenerId;
 

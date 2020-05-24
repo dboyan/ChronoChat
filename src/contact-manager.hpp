@@ -282,7 +282,7 @@ private:
   BufferedIdCerts m_bufferedIdCerts;
 
   // Tmp Dns
-  const ndn::RegisteredPrefixId* m_dnsListenerId;
+  ndn::RegisteredPrefixHandle m_dnsListenerId;
 
   RecLock m_collectCountMutex;
   size_t m_collectCount;

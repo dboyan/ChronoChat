@@ -41,7 +41,7 @@ ControllerBackend::ControllerBackend(QObject* parent)
   : QThread(parent)
   , m_shouldResume(false)
   , m_contactManager(m_face)
-  , m_invitationListenerId(0)
+  , m_invitationListenerId()
 {
   // connection to contact manager
   connect(this, SIGNAL(identityUpdated(const QString&)),
@@ -143,33 +143,27 @@ ControllerBackend::setInvitationListener()
   invitationPrefix.append(m_identity).append("CHRONOCHAT-INVITATION");
   requestPrefix.append(m_identity).append("CHRONOCHAT-INVITATION-REQUEST");
 
-  const ndn::RegisteredPrefixId* invitationListenerId =
+  ndn::RegisteredPrefixHandle invitationListenerId =
     m_face.setInterestFilter(invitationPrefix,
                              bind(&ControllerBackend::onInvitationInterest,
                                   this, _1, _2, offset),
                              bind(&ControllerBackend::onInvitationRegisterFailed,
                                   this, _1, _2));
 
-  if (m_invitationListenerId != 0) {
-    m_face.unregisterPrefix(m_invitationListenerId,
-                            bind(&ControllerBackend::onInvitationPrefixReset, this),
-                            bind(&ControllerBackend::onInvitationPrefixResetFailed, this, _1));
-  }
+
+  m_invitationListenerId.unregister(
+    bind(&ControllerBackend::onInvitationPrefixReset, this),
+    bind(&ControllerBackend::onInvitationPrefixResetFailed, this, _1));
 
   m_invitationListenerId = invitationListenerId;
 
-  const ndn::RegisteredPrefixId* requestListenerId =
+  ndn::RegisteredPrefixHandle requestListenerId =
     m_face.setInterestFilter(requestPrefix,
                              bind(&ControllerBackend::onInvitationRequestInterest,
                                   this, _1, _2, offset),
                              [] (const Name& prefix, const std::string& failInfo) {});
 
-  if (m_requestListenerId != 0) {
-    m_face.unregisterPrefix(m_requestListenerId,
-                            []{},
-                            [] (const std::string& failInfo) {});
-  }
-
+  m_requestListenerId.cancel();
   m_requestListenerId = requestListenerId;
 }
 

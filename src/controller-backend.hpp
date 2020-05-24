@@ -170,8 +170,8 @@ private:
   ndn::ValidatorNull m_nullValidator;
 
   // RegisteredPrefixId
-  const ndn::RegisteredPrefixId* m_invitationListenerId;
-  const ndn::RegisteredPrefixId* m_requestListenerId;
+  ndn::RegisteredPrefixHandle m_invitationListenerId;
+  ndn::RegisteredPrefixHandle m_requestListenerId;
 
   // ChatRoomList
   QStringList m_chatDialogList;
