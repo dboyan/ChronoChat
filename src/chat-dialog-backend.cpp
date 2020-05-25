@@ -242,7 +242,7 @@ ChatDialogBackend::processSyncUpdate(const std::vector<chronosync::MissingDataIn
                           [this] (const ndn::Data& data, const ndn::security::v2::ValidationError& error) {
                             this->processChatData(data, true, false);
                           },
-                          ndn::OnTimeout(),
+                          [] (const Interest&) {},
                           2);
         _LOG_DEBUG("<<< Fetching " << updates[i].session << "/" << seq);
       }
@@ -256,7 +256,7 @@ ChatDialogBackend::processSyncUpdate(const std::vector<chronosync::MissingDataIn
                         [this] (const ndn::Data& data, const ndn::security::v2::ValidationError& error) {
                           this->processChatData(data, false, false);
                         },
-                        ndn::OnTimeout(),
+                        [] (const Interest&) {},
                         2);
     }
 
