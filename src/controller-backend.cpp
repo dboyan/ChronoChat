@@ -30,6 +30,7 @@ using ndn::Face;
 using ndn::security::v2::Certificate;
 using ndn::security::v2::InterestValidationSuccessCallback;
 using ndn::security::v2::InterestValidationFailureCallback;
+using ndn::util::SegmentFetcher;
 
 
 static const ndn::Name::Component ROUTING_HINT_SEPARATOR =
@@ -387,11 +388,11 @@ ControllerBackend::onUpdateLocalPrefixAction()
   interest.setInterestLifetime(time::milliseconds(1000));
   interest.setMustBeFresh(true);
 
-  ndn::util::SegmentFetcher::fetch(m_face,
-                                   interest,
-                                   m_nullValidator,
-                                   bind(&ControllerBackend::onLocalPrefix, this, _1),
-                                   bind(&ControllerBackend::onLocalPrefixError, this, _1, _2));
+  shared_ptr<SegmentFetcher> fetcher = SegmentFetcher::start(m_face,
+                                                             interest,
+                                                             m_nullValidator);
+  fetcher->onComplete.connect(bind(&ControllerBackend::onLocalPrefix, this, _1));
+  fetcher->onError.connect(bind(&ControllerBackend::onLocalPrefixError, this, _1, _2));
 }
 
 void
