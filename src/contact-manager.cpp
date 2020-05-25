@@ -172,6 +172,8 @@ ContactManager::fetchEndorseCertificateInternal(const Name& identity, size_t cer
                          bind(&ContactManager::onEndorseCertificateInternal,
                               this, _1, _2, identity, certIndex,
                               endorseCollection->getCollectionEntries()[certIndex].hash),
+                         bind(&ContactManager::onEndorseCertificateInternalNack,
+                              this, _1, identity, certIndex),
                          bind(&ContactManager::onEndorseCertificateInternalTimeout,
                               this, _1, identity, certIndex));
 }
@@ -327,6 +329,14 @@ ContactManager::onEndorseCertificateInternal(const Interest& interest, const Dat
     m_bufferedContacts[identity].m_endorseCertList.push_back(endorseCertificate);
   }
 
+  fetchEndorseCertificateInternal(identity, certIndex+1);
+}
+
+void
+ContactManager::onEndorseCertificateInternalNack(const Interest& interest,
+                                                 const Name& identity,
+                                                 size_t certIndex)
+{
   fetchEndorseCertificateInternal(identity, certIndex+1);
 }
 
@@ -567,6 +577,8 @@ ContactManager::sendInterest(const Interest& interest,
   m_face.expressInterest(interest,
                          bind(&ContactManager::onTargetData,
                               this, _1, _2, onValidated, onValidationFailed),
+                         bind(&ContactManager::onTargetTimeout, // TODO: add proper method for NACK
+                              this, _1, retry, onValidated, onValidationFailed, timeoutNotify),
                          bind(&ContactManager::onTargetTimeout,
                               this, _1, retry, onValidated, onValidationFailed, timeoutNotify));
 }

@@ -95,6 +95,9 @@ private:
   void
   onRequestTimeout(const Interest& interest, int& resendTimes);
 
+  void
+  onRequestNacked(const Interest& interest, const ndn::lp::Nack);
+
 signals:
   void
   identityUpdated(const QString& identity);

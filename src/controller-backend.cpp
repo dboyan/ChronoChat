@@ -340,9 +340,16 @@ ControllerBackend::onRequestTimeout(const Interest& interest, int& resendTimes)
   if (resendTimes < MAXIMUM_REQUEST)
     m_face.expressInterest(interest,
                            bind(&ControllerBackend::onRequestResponse, this, _1, _2),
+                           bind(&ControllerBackend::onRequestNacked, this, _1, _2),
                            bind(&ControllerBackend::onRequestTimeout, this, _1, resendTimes + 1));
   else
     emit invitationRequestResult("Invitation request times out.");
+}
+
+void
+ControllerBackend::onRequestNacked(const Interest& interest, const ndn::lp::Nack)
+{
+  emit invitationRequestResult("Invitation request times NACKED.");
 }
 
 // public slots:
@@ -488,6 +495,7 @@ ControllerBackend::onSendInvitationRequest(const QString& chatroomName, const QS
   interest.getNonce();
   m_face.expressInterest(interest,
                          bind(&ControllerBackend::onRequestResponse, this, _1, _2),
+                         bind(&ControllerBackend::onRequestNacked, this, _1, _2),
                          bind(&ControllerBackend::onRequestTimeout, this, _1, 0));
 }
 

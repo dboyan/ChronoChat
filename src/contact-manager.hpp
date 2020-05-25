@@ -102,6 +102,10 @@ private:
                                std::string hash);
 
   void
+  onEndorseCertificateInternalNack(const Interest& interest,
+                                   const Name& identity,
+                                   size_t certIndex);
+  void
   onEndorseCertificateInternalTimeout(const Interest& interest,
                                       const Name& identity,
                                       size_t certIndex);
