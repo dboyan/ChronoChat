@@ -27,9 +27,9 @@ namespace chronochat {
 using std::string;
 
 using ndn::Face;
-using ndn::OnInterestValidated;
-using ndn::OnInterestValidationFailed;
 using ndn::security::v2::Certificate;
+using ndn::security::v2::InterestValidationSuccessCallback;
+using ndn::security::v2::InterestValidationFailureCallback;
 
 
 static const ndn::Name::Component ROUTING_HINT_SEPARATOR =
@@ -206,8 +206,8 @@ ControllerBackend::onInvitationInterest(const ndn::Name& prefix,
     return;
   }
 
-  OnInterestValidated onValidated = bind(&ControllerBackend::onInvitationValidated, this, _1);
-  OnInterestValidationFailed onFailed = bind(&ControllerBackend::onInvitationValidationFailed,
+  InterestValidationSuccessCallback onValidated = bind(&ControllerBackend::onInvitationValidated, this, _1);
+  InterestValidationFailureCallback onFailed = bind(&ControllerBackend::onInvitationValidationFailed,
                                              this, _1, _2);
 
   m_validator.validate(*invitationInterest, onValidated, onFailed);

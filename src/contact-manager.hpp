@@ -157,22 +157,22 @@ private:
   // Communication
   void
   sendInterest(const Interest& interest,
-               const ndn::OnDataValidated& onValidated,
-               const ndn::OnDataValidationFailed& onValidationFailed,
+               const ndn::security::v2::DataValidationSuccessCallback& onValidated,
+               const ndn::security::v2::DataValidationFailureCallback& onValidationFailed,
                const TimeoutNotify& timeoutNotify,
                int retry = 1);
 
   void
   onTargetData(const Interest& interest,
                const Data& data,
-               const ndn::OnDataValidated& onValidated,
-               const ndn::OnDataValidationFailed& onValidationFailed);
+               const ndn::security::v2::DataValidationSuccessCallback& onValidated,
+               const ndn::security::v2::DataValidationFailureCallback& onValidationFailed);
 
   void
   onTargetTimeout(const Interest& interest,
                   int retry,
-                  const ndn::OnDataValidated& onValidated,
-                  const ndn::OnDataValidationFailed& onValidationFailed,
+                  const ndn::security::v2::DataValidationSuccessCallback& onValidated,
+                  const ndn::security::v2::DataValidationFailureCallback& onValidationFailed,
                   const TimeoutNotify& timeoutNotify);
 
   // DNS listener
