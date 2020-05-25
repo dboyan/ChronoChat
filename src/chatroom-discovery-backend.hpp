@@ -18,7 +18,7 @@
 #include "chatroom-info.hpp"
 #include <boost/random.hpp>
 #include <mutex>
-#include <socket.hpp>
+#include <ChronoSync/socket.hpp>
 #include <boost/thread.hpp>
 #endif
 
