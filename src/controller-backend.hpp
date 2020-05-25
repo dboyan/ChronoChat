@@ -20,7 +20,7 @@
 #include "common.hpp"
 #include "contact-manager.hpp"
 #include "invitation.hpp"
-#include "validator-invitation.hpp"
+//#include "validator-invitation.hpp"
 #include <ndn-cxx/face.hpp>
 #include <ndn-cxx/security/key-chain.hpp>
 #include <ndn-cxx/ims/in-memory-storage-persistent.hpp>
@@ -170,8 +170,8 @@ private:
 
   // Security related;
   ndn::KeyChain m_keyChain;
-  ValidatorInvitation m_validator;
-  ndn::ValidatorNull m_nullValidator;
+  //ValidatorInvitation m_validator;
+  ndn::security::v2::ValidatorNull m_nullValidator;
 
   // RegisteredPrefixId
   ndn::RegisteredPrefixHandle m_invitationListenerId;

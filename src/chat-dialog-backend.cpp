@@ -17,7 +17,6 @@
 #include <iostream>
 #include <boost/iostreams/stream.hpp>
 #include <ndn-cxx/util/io.hpp>
-#include <ndn-cxx/security/validator-regex.hpp>
 #include "logging.h"
 #include "cryptopp.hpp"
 #endif
@@ -123,6 +122,8 @@ ChatDialogBackend::initializeSync()
   // initialize validator
   shared_ptr<Certificate> anchor = loadTrustAnchor();
 
+  // TODO
+  /*
   if (static_cast<bool>(anchor)) {
     shared_ptr<ndn::ValidatorRegex> validator =
       make_shared<ndn::ValidatorRegex>(m_face.get()); // TODO: Change to Face*
@@ -138,8 +139,8 @@ ChatDialogBackend::initializeSync()
 
     m_validator = validator;
   }
-  else
-    m_validator = shared_ptr<ndn::Validator>();
+  else */
+    m_validator = shared_ptr<ndn::security::v2::Validator>();
 
 
   // create a new SyncSocket

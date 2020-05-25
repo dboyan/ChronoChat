@@ -211,7 +211,7 @@ ControllerBackend::onInvitationInterest(const ndn::Name& prefix,
   InterestValidationFailureCallback onFailed = bind(&ControllerBackend::onInvitationValidationFailed,
                                              this, _1, _2);
 
-  m_validator.validate(*invitationInterest, onValidated, onFailed);
+  // m_validator.validate(*invitationInterest, onValidated, onFailed);
 }
 
 void
@@ -506,10 +506,10 @@ ControllerBackend::onContactIdListReady(const QStringList& list)
   ContactList contactList;
 
   m_contactManager.getContactList(contactList);
-  m_validator.cleanTrustAnchor();
+  //m_validator.cleanTrustAnchor();
 
-  for (ContactList::const_iterator it  = contactList.begin(); it != contactList.end(); it++)
-    m_validator.addTrustAnchor((*it)->getPublicKeyName(), (*it)->getPublicKey());
+  //for (ContactList::const_iterator it  = contactList.begin(); it != contactList.end(); it++)
+    //m_validator.addTrustAnchor((*it)->getPublicKeyName(), (*it)->getPublicKey());
 
 }
 

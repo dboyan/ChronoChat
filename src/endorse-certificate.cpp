@@ -20,14 +20,13 @@ namespace chronochat {
 using std::vector;
 using std::string;
 
-using ndn::CertificateSubjectDescription;
-using ndn::CertificateExtension;
-using ndn::OID;
 using ndn::security::v2::Certificate;
+//using ndn::CertificateSubjectDescription;
+//using ndn::CertificateExtension;
 using ndn::OBufferStream;
 
-const OID EndorseCertificate::PROFILE_EXT_OID("1.3.6.1.5.32.2.1");
-const OID EndorseCertificate::ENDORSE_EXT_OID("1.3.6.1.5.32.2.2");
+const std::string EndorseCertificate::PROFILE_EXT_OID("1.3.6.1.5.32.2.1");
+const std::string EndorseCertificate::ENDORSE_EXT_OID("1.3.6.1.5.32.2.2");
 
 const vector<string> EndorseCertificate::DEFAULT_ENDORSE_LIST;
 
@@ -64,8 +63,11 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
   dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
   setName(dataName);
 
-  setNotBefore(kskCertificate.getNotBefore());
-  setNotAfter(kskCertificate.getNotAfter());
+  // TODO
+  /*
+  auto period = kskCertificate.getValidityPeriod();
+  getsetNotBefore(period.first);
+  setNotAfter(period.second);
   addSubjectDescription(CertificateSubjectDescription(OID("2.5.4.41"), m_keyName.toUri()));
   setPublicKeyInfo(kskCertificate.getPublicKeyInfo());
 
@@ -80,6 +82,7 @@ EndorseCertificate::EndorseCertificate(const Certificate& kskCertificate,
                                                                        endorseWire.size())));
 
   encode();
+  */
 }
 
 EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertificate,
@@ -95,6 +98,8 @@ EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertific
   dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
   setName(dataName);
 
+  // TODO
+  /*
   setNotBefore(endorseCertificate.getNotBefore());
   setNotAfter(endorseCertificate.getNotAfter());
   addSubjectDescription(CertificateSubjectDescription(OID("2.5.4.41"), m_keyName.toUri()));
@@ -131,6 +136,8 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
   dataName.append("PROFILE-CERT").append(m_signer.wireEncode()).appendVersion();
   setName(dataName);
 
+  // TODO
+  /*
   setNotBefore(notBefore);
   setNotAfter(notAfter);
   addSubjectDescription(CertificateSubjectDescription(OID("2.5.4.41"), m_keyName.toUri()));
@@ -147,6 +154,7 @@ EndorseCertificate::EndorseCertificate(const Name& keyName,
                                                                        endorseWire.size())));
 
   encode();
+  */
 }
 
 EndorseCertificate::EndorseCertificate(const EndorseCertificate& endorseCertificate)
@@ -169,7 +177,8 @@ EndorseCertificate::EndorseCertificate(const Data& data)
   m_keyName = dataName.getPrefix(-3);
   m_signer.wireDecode(dataName.get(-2).blockFromValue());
 
-
+  // TODO
+  /*
   for (const auto& entry : m_extensionList) {
     if (PROFILE_EXT_OID == entry.getOid()) {
       m_profile.wireDecode(Block(entry.getValue().buf(), entry.getValue().size()));
@@ -181,6 +190,7 @@ EndorseCertificate::EndorseCertificate(const Data& data)
       endorseExtension >> m_endorseList;
     }
   }
+  */
 }
 
 } // namespace chronochat

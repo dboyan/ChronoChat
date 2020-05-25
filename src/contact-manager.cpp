@@ -40,10 +40,9 @@ using std::vector;
 
 using ndn::Face;
 using ndn::OBufferStream;
-using ndn::Validator;
-using ndn::ValidatorRegex;
-using ndn::SecRuleRelative;
 using ndn::security::v2::Certificate;
+using ndn::security::v2::Validator;
+using ndn::security::v2::ValidationError;
 using ndn::security::v2::DataValidationSuccessCallback;
 using ndn::security::v2::DataValidationFailureCallback;
 
@@ -107,6 +106,8 @@ ContactManager::initializeSecurity()
 {
   shared_ptr<Certificate> anchor = loadTrustAnchor();
 
+  // TODO
+  /*
   shared_ptr<ValidatorRegex> validator = make_shared<ValidatorRegex>(boost::ref(m_face));
   validator->addDataVerificationRule(make_shared<SecRuleRelative>("^([^<DNS>]*)<DNS><ENDORSED>",
                                                                   "^([^<KEY>]*)<KEY>(<>*)<><ID-CERT>$",
@@ -131,6 +132,7 @@ ContactManager::initializeSecurity()
                                                                   ">", "\\1", "\\1\\2", true));
   validator->addTrustAnchor(anchor);
   m_validator = validator;
+  */
 }
 
 void

@@ -82,8 +82,8 @@ public:
   }
 
 private:
-  static const ndn::OID PROFILE_EXT_OID;
-  static const ndn::OID ENDORSE_EXT_OID;
+  static const std::string PROFILE_EXT_OID;
+  static const std::string ENDORSE_EXT_OID;
 
   Name m_keyName;
   Name m_signer; // signing key name

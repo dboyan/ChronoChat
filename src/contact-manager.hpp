@@ -23,7 +23,7 @@
 #include "endorse-collection.hpp"
 #include <ndn-cxx/face.hpp>
 #include <ndn-cxx/security/key-chain.hpp>
-#include <ndn-cxx/security/validator.hpp>
+#include <ndn-cxx/security/v2/validator.hpp>
 #include <boost/thread/locks.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #endif
@@ -276,7 +276,7 @@ private:
 
   // Conf
   shared_ptr<ContactStorage> m_contactStorage;
-  shared_ptr<ndn::Validator> m_validator;
+  shared_ptr<ndn::security::v2::Validator> m_validator;
   ndn::Face& m_face;
   ndn::KeyChain m_keyChain;
   Name m_identity;
