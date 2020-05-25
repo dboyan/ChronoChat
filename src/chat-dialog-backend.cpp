@@ -493,7 +493,7 @@ ChatDialogBackend::getHexEncodedDigest(ndn::ConstBufferPtr digest)
 {
   std::stringstream os;
 
-  CryptoPP::StringSource(digest->buf(), digest->size(), true,
+  CryptoPP::StringSource(digest->get<const unsigned char>(), digest->size(), true,
                          new CryptoPP::HexEncoder(new CryptoPP::FileSink(os), false));
   return os.str();
 }
