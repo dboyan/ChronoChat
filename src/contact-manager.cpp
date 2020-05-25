@@ -745,7 +745,7 @@ ContactManager::onRefreshBrowseContact()
   try {
     using namespace boost::asio::ip;
     tcp::iostream request_stream;
-    request_stream.expires_from_now(boost::posix_time::milliseconds(5000));
+    request_stream.expires_from_now(std::chrono::milliseconds(5000));
     request_stream.connect("ndncert.named-data.net","80");
     if (!request_stream) {
       emit warning(QString::fromStdString("Fail to fetch certificate directory! #1"));
