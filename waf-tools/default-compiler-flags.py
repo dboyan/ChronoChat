@@ -11,7 +11,7 @@ def configure(conf):
     defaultFlags = ['-std=c++14',
                     '-stdlib=libc++',   # clang on OSX < 10.9 by default uses gcc's
                                         # libstdc++, which is not C++11 compatible
-                    '-Wall', '-Wno-nested-anon-types']
+                    '-Wall', '-Wno-nested-anon-types', '-fPIC']
 
     if conf.options.debug:
         conf.define('_DEBUG', 1)

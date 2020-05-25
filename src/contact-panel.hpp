@@ -12,6 +12,7 @@
 #define CHRONOCHAT_CONTACT_PANEL_HPP
 
 #include <QDialog>
+#include <QItemSelection>
 #include <QStringListModel>
 #include <QSqlTableModel>
 
