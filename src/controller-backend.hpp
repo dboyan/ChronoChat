@@ -21,6 +21,7 @@
 #include "contact-manager.hpp"
 #include "invitation.hpp"
 #include "validator-invitation.hpp"
+#include <ndn-cxx/face.hpp>
 #include <ndn-cxx/security/key-chain.hpp>
 #include <ndn-cxx/ims/in-memory-storage-persistent.hpp>
 #include <ndn-cxx/security/validator-null.hpp>

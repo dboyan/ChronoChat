@@ -21,6 +21,7 @@
 #include "profile.hpp"
 #include "endorse-info.hpp"
 #include "endorse-collection.hpp"
+#include <ndn-cxx/face.hpp>
 #include <ndn-cxx/security/key-chain.hpp>
 #include <ndn-cxx/security/validator.hpp>
 #include <boost/thread/locks.hpp>
