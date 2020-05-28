@@ -463,7 +463,7 @@ Controller::updateMenu()
   menu->addAction(m_quitAction);
 
   m_trayIcon->setContextMenu(menu);
-  delete m_trayIconMenu;
+  m_trayIconMenu->deleteLater();
   m_trayIconMenu = menu;
   m_closeMenu = closeMenu;
 }
