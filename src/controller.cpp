@@ -55,6 +55,7 @@ Controller::Controller(QWidget* parent)
   , m_browseContactDialog(new BrowseContactDialog(this))
   , m_addContactPanel(new AddContactPanel(this))
   , m_discoveryPanel(new DiscoveryPanel(this))
+  , m_nfdConnectionChecker(nullptr)
 {
   qRegisterMetaType<ndn::Name>("ndn.Name");
   qRegisterMetaType<ndn::security::v2::Certificate>("ndn.security.v2.Certificate");
