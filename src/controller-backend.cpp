@@ -474,6 +474,8 @@ ControllerBackend::onInvitationRequestResponded(const ndn::Name& invitationRespo
   else
     response->setContent(ndn::makeNonNegativeIntegerBlock(tlv::Content, 0));
 
+  response->setFreshnessPeriod(time::milliseconds(10000));
+
   m_keyChain.sign(*response, ndn::security::signingByIdentity(m_identity));
   m_ims.insert(*response);
   m_face.put(*response);
